@@ -1,0 +1,26 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: Int!
+}
+
+type Catalog {
+  id: Int!
+  name: String!
+}
+
+type Query {
+  sayHello(name: String): String!
+  getCatalogs: [Catalog!]!
+}
+
+type Mutation {
+  createUser(userInput: UserInput!): User!
+}
+
+input UserInput {
+  name: String!
+  lastname: String!
+}
