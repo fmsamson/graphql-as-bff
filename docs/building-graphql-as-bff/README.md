@@ -30,9 +30,11 @@ In his talk, there is still more and you can check it out [here](https://youtu.b
 ## What does the Architecture look like?
 Imagine you have a system where the frontend connects to several APIs.  
 With Backend for Frontend, there is only one interface that the frontend will communicate with.
+
 ![into_bff](into_bff.png)
 
 Then, if we use GraphQL as BFF, the data we are going to provide to Frontend are in the **Data Graph**.
+
 ![graphql_as_bff](graphql_as_bff.png)
 
 Before we dive into coding.  Let’s find out more about how we can best build up our GraphQL as a BFF application.
