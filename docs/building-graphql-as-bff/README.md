@@ -59,7 +59,9 @@ As a developer that is comfortable in coding classes, **code-first** would be a 
 This codebase is already set up in such a way that we can follow the Test Driven or Behavioral Driven Development practice (see [TDD with BDD](https://github.com/fmsamson/graphql-as-bff/blob/master/docs/TDD_WITH_BDD.md)).  
 It has a Mock API that will serve as the APIs that provides data for the frontend (see [Setting-up Mock API for development and testing](https://github.com/fmsamson/graphql-as-bff/blob/master/docs/SETUP_MOCK_API_FOR_DEV_AND_TEST.md)).  
 It uses the Testing Module provided by NestJS to spin up the GraphQL application for testing and the “supertest” module that will act as the client that communicates to the GraphQL application (see [Setting-up the End-to-End Test](https://github.com/fmsamson/graphql-as-bff/blob/master/docs/SETUP_TESTING_MODULE.md)).  
+
 Below is how the testing communication looks like.
+
 ![testing_setup](testing_setup.png)
 
 ## Let’s Code
