@@ -1,4 +1,5 @@
-import { closeTestingModule, initializeTestingModule } from '../testUtils';
+import { closeTestingModule, gql, initializeTestingModule, testApp } from '../testUtils';
+import * as request from 'supertest';
 
 describe('getVacationBags Query', () => {
     beforeEach(async () => {
@@ -8,11 +9,17 @@ describe('getVacationBags Query', () => {
         await closeTestingModule();
     });
 
-    it('returns a list of bookable resources', async () => {
-        // Given a  baby holding an empty bottle of milk
+    it.skip('returns a list of bookable resources', async () => {
+        // Given a baby needs to sleep within a day
+        const queryData = {
+            query: ``,
+            variables: {}
+        };
 
-        // When the baby cries
+        // When the baby goes to the beach
+        const response = await request(testApp.getHttpServer()).post(gql).send(queryData);
 
-        // Then the baby gets another full feeding bottle of formula milk
+        // Then the baby brings along his/her vacation stuff with a feeding bottle of formula milk
+        expect(response.error).toBeFalsy();
     });
 });

@@ -1,9 +1,0 @@
-{
-  "sample": [
-    { "id": 1, "name": "Jane", "lastname": "Doe" }
-  ],
-  "catalogs": [
-    { "id": 1, "name": "pillow", "price": "10.0" },
-    { "id": 2, "name": "blanket", "price": "10.0" }
-  ]
-}

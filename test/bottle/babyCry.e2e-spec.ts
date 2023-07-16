@@ -1,6 +1,7 @@
-import { closeTestingModule, initializeTestingModule } from '../testUtils';
+import { closeTestingModule, gql, initializeTestingModule, testApp } from '../testUtils';
+import * as request from 'supertest';
 
-describe('getVacationBags Query', () => {
+describe('babyCry Query', () => {
     beforeEach(async () => {
         await initializeTestingModule();
     });
@@ -8,11 +9,17 @@ describe('getVacationBags Query', () => {
         await closeTestingModule();
     });
 
-    it('returns the baby vacation bags', async () => {
-        // Given a baby needs to sleep between 12nn to 2pm
+    it('returns a new full feeding bottle of formula milk', async () => {
+        // Given a  baby holding an empty bottle of milk
+        const queryData = {
+            query: ``,
+            variables: {}
+        };
 
-        // When the baby goes to the beach between 10am to 4pm
+        // When the baby cries
+        const response = await request(testApp.getHttpServer()).post(gql).send(queryData);
 
-        // Then the baby brings along his/her vacation stuff with a feeding bottle of formula milk
+        // Then the baby gets another full feeding bottle of formula milk
+        expect(response.error).toBeFalsy();
     });
 });

@@ -1,17 +1,15 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { CatalogService } from './service/__sample/catalog.service';
-import { BookableService } from './service/bookable.service';
-import { DiscountService } from './service/discount.service';
-import { ProductService } from './service/product.service';
-import { SubscriptionService } from './service/subscription.service';
+import { MilkService } from './service/milk.service';
+import { HouseholdService } from './service/household.service';
+import { BottleService } from './service/bottle.service';
 
 const services = [
     CatalogService,
-    BookableService,
-    DiscountService,
-    ProductService,
-    SubscriptionService,
+    MilkService,
+    HouseholdService,
+    BottleService,
 ];
 @Module({
     imports: [
