@@ -1,6 +1,6 @@
 import { closeTestingModule, initializeTestingModule } from '../testUtils';
 
-describe('getBookableResources Query', () => {
+describe('getVacationBags Query', () => {
     beforeEach(async () => {
         await initializeTestingModule();
     });
@@ -9,10 +9,10 @@ describe('getBookableResources Query', () => {
     });
 
     it('returns a list of bookable resources', async () => {
-        // Given the Customer has selected a product
+        // Given a  baby holding an empty bottle of milk
 
-        // When the Customer opens the checkout
+        // When the baby cries
 
-        // Then the Customer sees a list of bookable resources with applicable discounts associated with it
+        // Then the baby gets another full feeding bottle of formula milk
     });
 });

@@ -5,5 +5,19 @@
   "catalogs": [
     { "id": 1, "name": "pillow", "price": "10.0" },
     { "id": 2, "name": "blanket", "price": "10.0" }
+  ],
+  "households": [
+    { "id": 1, "name": "Mom", "type": "adult" },
+    { "id": 2, "name": "Dad", "type": "adult" },
+    { "id": 3, "name": "Baby", "type": "infant" }
+  ],
+  "milks": [
+    { "id": 1, "name": "Formula", "type": "infant" },
+    { "id": 2, "name": "Cow", "type": "adult" }
+  ],
+  "bottles": [
+    { "id": 1, "name": "Feeding", "type": "infant" },
+    { "id": 2, "name": "Cola", "type": "adult" },
+    { "id": 3, "name": "Milk", "type": "adult" }
   ]
 }
