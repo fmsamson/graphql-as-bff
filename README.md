@@ -72,11 +72,8 @@ $ yarn install
 ## Running the app
 
 ```bash
-# development
-$ yarn run start
-
-# watch mode
-$ yarn run start:dev
+# development watch mode with mock API
+$ yarn run start:dev-with-mockApi
 
 # production mode
 $ yarn run start:prod
@@ -89,8 +86,8 @@ $ yarn run start:prod
 # unit tests
 $ yarn run test
 
-# e2e tests
-$ yarn run test:e2e
+# e2e tests with mock API
+$ yarn run test:e2e-with-mockApi
 
 # test coverage
 $ yarn run test:cov
