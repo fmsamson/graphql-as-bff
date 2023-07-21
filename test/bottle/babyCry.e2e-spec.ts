@@ -10,7 +10,7 @@ describe('babyCry Query', () => {
     });
 
     it('returns a new full feeding bottle of formula milk', async () => {
-        // Given a  baby holding an empty bottle of milk
+        // Given a baby is holding an empty bottle of milk
         const queryData = {
             query: ``,
             variables: {}
