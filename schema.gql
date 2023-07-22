@@ -11,9 +11,25 @@ type Catalog {
   name: String!
 }
 
+type Milk {
+  name: String!
+}
+
+type Bottle {
+  name: String!
+  status: String!
+  milk(bottleInput: BottleInput!): Milk!
+}
+
+input BottleInput {
+  isEmpty: Boolean!
+  type: String!
+}
+
 type Query {
   sayHello(name: String): String!
   getCatalogs: [Catalog!]!
+  babyCry(bottleInput: BottleInput!): Bottle!
 }
 
 type Mutation {
