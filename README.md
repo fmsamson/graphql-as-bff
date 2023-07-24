@@ -62,6 +62,67 @@ See [TDD with BDD](docs/TDD_WITH_BDD.md) page.
 ### Setting-up Mock API for development and testing
 See [Setting-up Mock API for development and testing](docs/SETUP_MOCK_API_FOR_DEV_AND_TEST.md) page.
 
+## Serverless
+
+### Initializing Infrastructure
+
+Create a folder `infrastructure` and to that folder and execute the following commands to create an infrastructure project.
+
+```bash
+$ npm install -g aws-cdk
+$ cdk init app --language typescript
+```
+
+Then the following files are created:
+
+- `bin/infrastructure.ts` is the starting point of your infrastructure project where you will going to initialize your stack.
+- `lib/infrastructure-stack.ts` contains the stack itself where you are going to declare the resources that you want in AWS.
+- `test/infrastructure.test.ts` contains your unit tests for your infrastructure.
+
+### Bootstrapping your AWS account
+
+To be able to deploy your infrasture using `cdk deploy`, make sure to bootstrap your AWS environment.  Execute the following command.
+```bash
+$ cdk bootstrap aws://<your aws account id>/<your preferred region>
+```
+
+Make sure that you have exported a fresh copy of your administrator AWS ACCESS KEY ID and SECRET along with the SESSION TOKEN.  You only need to set this up once.
+
+### Create an AWS Lambda Resource
+
+In `lib/infrastructure-stack.ts` create an AWS Lambda resource by having the code inside the constructor.
+
+```typescript
+    const lambdaHandler = new Function(this, 'LambdaHandler', {
+      code: Code.fromAsset(path.resolve(__dirname, '../../dist'), {
+        exclude: ['node_modules'],
+      }),
+      handler: 'main.handler',
+      runtime: Runtime.NODEJS_18_X,
+      environment: {
+        NODE_PATH: `$NODE_PATH:/opt`,
+      },
+    });
+```
+
+In `bin/infrastructure.ts`, instantiate the stack accordingly by having the following code.
+
+```typescript
+const ENVIRONMENT = {
+  account: '<your AWS Account ID>',
+  region: '<your preferred AWS region>',
+};
+
+const app = new cdk.App();
+new InfrastructureStack(app, 'InfrastructureStack', {
+  env: ENVIRONMENT,
+});
+```
+
+Then execute `cdk synth` to generate files in `cdk.out`.  It should have the equivalent cloudformation template in json of your infrastructure. Also, make sure that you have exported a fresh copy of your AWS ACCESS KEY ID and SECRET along with the SESSION TOKEN.
+
+Lastly, execute `cdk deploy` to deploy your infrastructure in AWS.
+
 ## Installation
 
 ```bash
