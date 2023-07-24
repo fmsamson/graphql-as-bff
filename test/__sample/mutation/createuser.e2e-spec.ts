@@ -1,6 +1,6 @@
 import { closeTestingModule, gql, initializeTestingModule, testApp } from '../../testUtils';
 import { UserInput } from '../../../src/model/input/__sample/user-input.model';
-import * as request from 'supertest';
+import request from 'supertest';
 import { User } from '../../../src/model/graph/__sample/user.model';
 
 describe('createUser Mutation', () => {

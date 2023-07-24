@@ -1,5 +1,5 @@
 import { closeTestingModule, gql, initializeTestingModule, testApp } from '../../testUtils';
-import * as request from 'supertest';
+import request from 'supertest';
 
 describe('sayHello Query', () => {
     beforeEach(async () => {

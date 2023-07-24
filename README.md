@@ -123,6 +123,122 @@ Then execute `cdk synth` to generate files in `cdk.out`.  It should have the equ
 
 Lastly, execute `cdk deploy` to deploy your infrastructure in AWS.
 
+### Bundling your NestJS App to Serverless
+
+Run the following command to install the necessary library for serverless to work into your NestJS App.
+
+```bash
+$ yarn add aws-lambda
+$ yarn add @vendia/serverless-express
+$ yarn add --dev @types/aws-lambda serverless-offline
+```
+
+Then update `main.ts` to declare the `handler` which will be the entry point for a serverless app.  Your `main.ts` will look like below.
+
+```bash
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
+import { Callback, Context, Handler } from 'aws-lambda';
+import serverlessExpress from '@vendia/serverless-express';
+
+let server: Handler;
+
+async function bootstrap() {
+    const app = await NestFactory.create(AppModule);
+    app.useGlobalPipes(new ValidationPipe());
+
+    await app.init();
+    const expressApp = app.getHttpAdapter().getInstance();
+    return serverlessExpress({ app: expressApp });
+}
+
+export const handler: Handler = async (
+    event: any, 
+    context: Context, 
+    callback: Callback) => {
+        context.callbackWaitsForEmptyEventLoop = false;
+        server = server ?? await bootstrap();
+        return server(event, context, callback);
+};
+```
+
+Next, add a `webpack.config.js` with the following content.
+
+```typescript
+module.exports = (options, webpack) => {
+    const lazyImports = [
+        '@nestjs/microservices/microservices-module',
+        '@nestjs/websockets/socket-module',
+        '@as-integrations/fastify',
+        '@apollo/subgraph',
+        '@apollo/gateway',
+        '@apollo/subgraph/package.json',
+        '@apollo/subgraph/dist/directives',
+        'class-transformer/storage',
+        'ts-morph'
+    ];
+
+    return {
+        ...options,
+        externals: [
+            { fsevents: "require('fsevents')" }
+        ],
+        output: {
+            ...options.output,
+            libraryTarget: 'commonjs2',
+        },
+        plugins:[
+            ...options.plugins,
+            new webpack.IgnorePlugin({
+                checkResource(resource) {
+                    if(lazyImports.includes(resource)) {
+                        try {
+                            require.resolve(resource);
+                        } catch(err) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            }),
+        ],
+    };
+};
+```
+
+Lastly, update `tsconfig.json` to include `"esModuleInterop": true` for the webpack to work properly.  Also, exclude the `infrastructure` directory when build is run by adding it in `tsconfig.build.json`.
+
+To build your NestJS using webpack is to add an option `--webpack` in your `package.json` under `build` script.  Then execute `yarn run build`.
+
+### Running NestJS App in Serverless Offline
+
+You will need to have `serverless.yml` for your NestJS App to run serverless locally.  Create the `serverless.yml` and copy the content below to it.
+
+```yml
+service: serverless-example
+
+plugins: 
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+
+functions:
+  main:
+    handler: dist/main.handler
+    events:
+      - http:
+          method: ANY
+          path: /
+      - http:
+          method: ANY
+          path: '{proxy+}'
+```
+
+Then run `npx serverless offline` to run your NestJS App as serverless in your local machine.
+
 ## Installation
 
 ```bash

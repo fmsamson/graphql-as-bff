@@ -1,5 +1,5 @@
 import { closeTestingModule, gql, initializeTestingModule, testApp } from '../testUtils';
-import * as request from 'supertest';
+import request from 'supertest';
 
 import { BottleInput } from '../../src/model/input/bottle-input.model';
 import { Bottle } from '../../src/model/graph/bottle.model';

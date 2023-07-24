@@ -1,6 +1,6 @@
 import { closeTestingModule, gql, initializeTestingModule, testApp } from '../../testUtils';
 import { Catalog } from '../../../src/model/graph/__sample/catalog.model';
-import * as request from 'supertest';
+import request from 'supertest';
 
 describe('getCatalogs Query', () => {
     beforeEach(async () => {
