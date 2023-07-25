@@ -188,3 +188,58 @@ functions:
 ```
 
 Then run `npx serverless offline` to run your NestJS App as serverless in your local machine.
+
+### Deploying Serverless NestJS App to AWS
+
+We have already created an initial infrastructure for our AWS Lambda where it will get the build code from the `dist` 
+folder of your NestJS App.  By default, NestJS will not include the dependencies into the `dist` and so we will need to 
+add a `Handler Layer` of the Lambda function to contain the `node_modules` libraries.
+
+In your `lib/infrastructure-stack.ts` add the following code to create a lambda layer.
+
+```typescript
+    const lambdaLayer = new LayerVersion(this, 'HandlerLayer', {
+      code: Code.fromAsset(path.resolve(__dirname, '../../node_modules')),
+      compatibleRuntimes: [Runtime.NODEJS_18_X],
+      description: 'contains the production dependencies from node_modules of lambda function',
+    });
+```
+
+Then add the newly created layer to your lambda handler.
+
+```typescript
+    const lambdaHandler = new Function(this, 'LambdaHandler', {
+      ...
+      layers: [lambdaLayer],
+      ...
+    });
+```
+
+> **_TAKE NOTE:_** There is a limited size that the lambda layer can support (unzipped deployment package size quota of 250 MB). 
+So make sure that your `node_modules` only contains production dependencies.
+
+Whenever we deploy the infrastructure, we need to take note of the following steps:
+
+- Clean up your `node_modules` to make sure that it only contains the necessary dependencies for building your NestJS App
+- Build the NestJS App with `--webpack` option
+- Then, clean up again the `node_modules` folder to only contain production dependencies
+- Afterwards, do a `cdk synth` and then `cdk deploy` to install your Serverless NestJS App to AWS Lambda
+
+To be able to do these steps, we are going to introduce a new script in `package.json` in your main app folder. 
+Add the following script:
+
+```json
+{
+  "scripts": {
+    ...
+    "infra:deploy": "rm -frv node_modules && npm prune && nest build --webpack && npm prune --production && cd infrastructure && rm -frv cdk.out node_modules && npm install && cdk synth && cdk deploy"
+  }
+}
+```
+
+Try to run the newly added script by executing `yarn run infra:deploy`.  
+Make sure to set in your environment for the necessary ACCESS TOKEN of your AWS Account.
+
+Once your infrastructure is deployed, you should be able to see your Handler Layer in your AWS Lambda resource.
+
+![handler_layer](handler_layer.png)
