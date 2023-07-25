@@ -8,7 +8,7 @@ import { ProviderModule } from './provider.module';
         ProviderModule,
         GraphQLModule.forRoot<ApolloDriverConfig>({
             driver: ApolloDriver,
-            autoSchemaFile: 'schema.gql',
+            autoSchemaFile: process.env.NODE_ENV === 'development' ? 'schema.gql' : true,
             installSubscriptionHandlers: true,
         }),
     ],
