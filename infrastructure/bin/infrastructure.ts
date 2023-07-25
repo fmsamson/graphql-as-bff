@@ -2,10 +2,13 @@
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { InfrastructureStack } from '../lib/infrastructure-stack';
+import 'dotenv/config';
+
+require('dotenv').config();
 
 const ENVIRONMENT = {
-  account: '547184582560',
-  region: 'eu-west-1',
+  account: process.env.AWS_ACCOUNT,
+  region: process.env.AWS_REGION,
 };
 
 const app = new cdk.App();
