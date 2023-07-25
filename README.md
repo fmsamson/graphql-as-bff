@@ -67,6 +67,37 @@ See [Setting-up Mock API for development and testing](docs/SETUP_MOCK_API_FOR_DE
 
 See [Serverless](docs/SERVERLESS.md) page.
 
+## Minify
+
+`yarn add -D terser-webpack-plugin`
+
+```javascript
+const TerserPlugin = require("terser-webpack-plugin");
+
+module.exports = {
+  optimization: {
+    minimize: true,
+    minimizer: [
+        new TerserPlugin({
+            terserOptions: {
+                keep_classnames: true,
+                keep_fnames: true,
+                compress: {
+                    drop_console: true,
+                },
+                format: {
+                    comments: false,
+                },
+            },
+            extractComments: false,
+        }),
+    ],
+  },
+};
+```
+
+Adding the minify configuration has a significant decrease of `main.js` file size.  This will improve the performance of transferring the file to the runtime environment which contribute to `cold start` in serverless environment.  From `1.9 MB` down to `1,004.0 kB` package size and memory used is only `~118 MB`!
+
 ## Installation
 
 ```bash
