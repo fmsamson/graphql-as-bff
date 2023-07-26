@@ -10,6 +10,9 @@ import { ProviderModule } from './provider.module';
             driver: ApolloDriver,
             autoSchemaFile: process.env.NODE_ENV === 'development' ? 'schema.gql' : true,
             installSubscriptionHandlers: true,
+            persistedQueries: {
+                ttl: 900, // 15 minutes
+            },
         }),
     ],
 })
