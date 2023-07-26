@@ -50,6 +50,7 @@ module.exports = (options, webpack) => {
                         format: {
                             comments: false,
                         },
+                        mangle: true,
                     },
                     extractComments: false,
                 }),

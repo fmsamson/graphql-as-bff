@@ -12,7 +12,7 @@ describe('babyCry Query', () => {
         await closeTestingModule();
     });
 
-    it('returns a new full feeding bottle of formula milk', async () => {
+    it('POST method: returns a new full feeding bottle of formula milk', async () => {
         // Given a baby is holding an empty bottle of milk
         const bottleInput: BottleInput = {
             isEmpty: true,
@@ -40,6 +40,40 @@ describe('babyCry Query', () => {
 
         // When the baby cries
         const response = await request(testApp.getHttpServer()).post(gql).send(queryData);
+
+        // Then the baby gets another full feeding bottle of formula milk
+        expect(response.error).toBeFalsy();
+        expect(response.body.data?.babyCry).toEqual(expectedBottle);
+    });
+
+    it('GET method: returns a new full feeding bottle of formula milk', async () => {
+        // Given a baby is holding an empty bottle of milk
+        const bottleInput: BottleInput = {
+            isEmpty: true,
+            type: 'infant'
+        };
+        const expectedBottle: Bottle = {
+            name: 'Feeding',
+            status: 'new',
+            milk: {
+                name: 'Formula'
+            }
+        };
+        const query = [`query anyname($input: BottleInput!){`,
+            `babyCry(bottleInput: $input) {`,
+                `name`,
+                `status`,
+                `milk(bottleInput: $input) {`,
+                    `name`,
+                `}`,
+            `}`,
+        `}`];
+        const variables = { input: bottleInput };
+        const url = `${gql}?query=${query}&variables=${JSON.stringify(variables)}`;
+
+        // When the baby cries
+        const response = await request(testApp.getHttpServer()).get(url)
+            .set('Content-Type',  'application/json');
 
         // Then the baby gets another full feeding bottle of formula milk
         expect(response.error).toBeFalsy();

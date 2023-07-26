@@ -9,7 +9,7 @@ describe('sayHello Query', () => {
         await closeTestingModule();
     });
 
-    it('should return Hello World', async () => {
+    it('POST method: should return Hello World', async () => {
         // Given
         const queryData = {
             query: `query { sayHello }`,
@@ -25,7 +25,22 @@ describe('sayHello Query', () => {
         expect(response.body.data?.sayHello).toBe(expectedSayHello);
     });
 
-    it('should return Hello John', async () => {
+    it('GET method: should return Hello World', async () => {
+        // Given
+        const query = `{ sayHello }`;
+        const expectedSayHello = 'Hello World!';
+        const url = `${gql}?query=${query}`;
+
+        // When
+        const response = await request(testApp.getHttpServer()).get(url)
+            .set('Content-Type',  'application/json');
+
+        // Then
+        expect(response.error).toBeFalsy();
+        expect(response.body.data?.sayHello).toBe(expectedSayHello);
+    });
+
+    it('POST method: should return Hello John', async () => {
         // Given
         const nameInput = 'John';
         const queryData = {
@@ -39,6 +54,25 @@ describe('sayHello Query', () => {
         // When
         const response = await request(testApp.getHttpServer())
             .post(gql).send(queryData);
+
+        // Then
+        expect(response.error).toBeFalsy();
+        expect(response.body.data?.sayHello).toBe(expectedSayHello);
+    });
+
+    it('GET method: should return Hello John', async () => {
+        // Given
+        const nameInput = 'John';
+        const query = [`query sayHello($nameInput: String) {`,
+            `sayHello(name: $nameInput)`,
+        `}`];
+        const variables = { nameInput: nameInput };
+        const expectedSayHello = `Hello ${nameInput}!`;
+        const url = `${gql}?query=${query}&variables=${JSON.stringify(variables)}`;
+
+        // When
+        const response = await request(testApp.getHttpServer()).get(url)
+            .set('Content-Type',  'application/json');
 
         // Then
         expect(response.error).toBeFalsy();
