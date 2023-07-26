@@ -99,6 +99,9 @@ module.exports = {
 
 Adding the minify configuration has a significant decrease of `main.js` file size.  This will improve the performance of transferring the file to the runtime environment which contribute to `cold start` in serverless environment.  From `1.9 MB` down to `1,004.0 kB` package size and memory used is only `~118 MB`!
 
+> Another thing is, the **Lambda Layer** is **NOT NEEDED** anymore. 
+> So you can remove it from the lambda function setup!
+
 ## Installation
 
 ```bash

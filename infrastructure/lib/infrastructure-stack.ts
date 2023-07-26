@@ -7,18 +7,11 @@ export class InfrastructureStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const lambdaLayer = new LayerVersion(this, 'HandlerLayer', {
-      code: Code.fromAsset(path.resolve(__dirname, '../../node_modules')),
-      compatibleRuntimes: [Runtime.NODEJS_18_X],
-      description: 'contains the production dependencies from node_modules of lambda function',
-    });
-
     const lambdaHandler = new Function(this, 'LambdaHandler', {
       code: Code.fromAsset(path.resolve(__dirname, '../../dist'), {
         exclude: ['node_modules', '**/*.d.ts'],
       }),
       handler: 'main.handler',
-      layers: [lambdaLayer],
       runtime: Runtime.NODEJS_18_X,
       memorySize: 512,
       environment: {

@@ -23,7 +23,7 @@
     "test:e2e-with-mockApi": "export NODE_ENV=development && npm-run-all copy:mock-api-json --parallel mockApi:start test:e2e --race",
     "start:serverless-offline": "nest build --webpack && npx serverless offline",
     "start:dev-with-mockApi": "npm-run-all copy:mock-api-json --parallel mockApi:start start:serverless-offline",
-    "infra:deploy": "rm -frv node_modules && npm prune && nest build --webpack && npm prune --production && cd infrastructure && rm -frv cdk.out node_modules && npm install && cdk synth && cdk deploy"
+    "infra:deploy": "rm -frv node_modules dist && npm prune && nest build --webpack && cd infrastructure && rm -frv cdk.out node_modules && npm install && cdk synth && cdk deploy"
   },
   "dependencies": {
     "@apollo/server": "^4.7.5",
