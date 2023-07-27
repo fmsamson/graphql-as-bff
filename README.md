@@ -102,6 +102,22 @@ Adding the minify configuration has a significant decrease of `main.js` file siz
 > Another thing is, the **Lambda Layer** is **NOT NEEDED** anymore. 
 > So you can remove it from the lambda function setup!
 
+## Improving performance of GraphQL Lambda function
+
+- Automatic Persisted Query
+  - Use /GET method in sending query to GraphQL
+  - Persist the query with its equivalent sha256hash code in the server side
+    - when the query does not yet exist, client sends the full query using POST
+    - succeeding queries will retrieve it from the cache
+  - By default, the persisted query are saved on in-memory cache
+    - TODO: better to save queries in a database as lambda function does not last longer and tend to have concurrent instances 
+- Lambda@Edge (at Regional Edge Location)
+  - use for origin request and response event
+- Cloudfront Function (at Edge Location)
+  - origin is the Function url of Lambda@Edge
+  - only use origin request and response and Lambda@Edge function will handle
+
+
 ## Installation
 
 ```bash
@@ -127,6 +143,8 @@ $ yarn run start:prod
 $ yarn run test
 
 # e2e tests with mock API
+# Note: a command 'export NODE_ENV=development' is in the script 
+# which works for mac/linux environment but not sure with windows 
 $ yarn run test:e2e-with-mockApi
 
 # test coverage
