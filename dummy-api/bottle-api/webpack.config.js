@@ -22,9 +22,6 @@ module.exports = {
     path: path.join(__dirname, 'build'),
     libraryTarget: 'commonjs2',
   },
-  externals: {
-    express: 'express',
-  },
   plugins: [
     new CopyWebpackPlugin({
         patterns: [
