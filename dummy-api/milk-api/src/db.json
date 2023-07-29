@@ -1,0 +1,6 @@
+{
+    "milks": [
+        { "id": 1, "name": "Formula", "type": "infant" },
+        { "id": 2, "name": "Cow", "type": "adult" }
+    ]
+}

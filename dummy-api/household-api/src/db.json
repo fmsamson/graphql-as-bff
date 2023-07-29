@@ -1,0 +1,7 @@
+{
+  "households": [
+    { "id": 1, "name": "Mom", "type": "adult" },
+    { "id": 2, "name": "Dad", "type": "adult" },
+    { "id": 3, "name": "Baby", "type": "infant" }
+  ]
+}

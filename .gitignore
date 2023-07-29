@@ -39,3 +39,11 @@ lerna-debug.log*
 /test/mock-api-copy.json
 /dummy-api/bottle-api/package-lock.json
 /dummy-api/bottle-api/build/
+/dummy-api/household-api/build/
+/dummy-api/household-api/node_modules/
+/dummy-api/milk-api/build/
+/dummy-api/milk-api/node_modules/
+/dummy-api/node_modules/
+/dummy-api/package-lock.json
+/dummy-api/milk-api/package-lock.json
+/dummy-api/household-api/package-lock.json

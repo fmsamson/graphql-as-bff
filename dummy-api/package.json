@@ -1,0 +1,19 @@
+{
+  "name": "dummy-api",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "build:bottle-api": "cd bottle-api && rimraf ./build && webpack",
+    "build:household-api": "cd household-api && rimraf ./build && webpack",
+    "build:milk-api": "cd milk-api && rimraf ./build && webpack",
+    "build": "npm run build:bottle-api && npm run build:household-api && npm run build:milk-api"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "rimraf": "^5.0.1",
+    "webpack-cli": "^5.1.4"
+  }
+}
