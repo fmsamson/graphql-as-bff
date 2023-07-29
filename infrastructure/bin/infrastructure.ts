@@ -1,17 +1,28 @@
 #!/usr/bin/env node
-import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { InfrastructureStack } from '../lib/infrastructure-stack';
+import { LambdaEdgeInfrastructureStack } from '../lib/lambdaedge-infrastructure-stack';
 import 'dotenv/config';
+import { BottleApiInfrastructureStack } from '../lib/bottleapi-infrastructure-stack';
 
 require('dotenv').config();
 
-const ENVIRONMENT = {
+const ENVIRONMENT_LAMBDA_EDGE = {
   account: process.env.AWS_ACCOUNT,
-  region: process.env.AWS_REGION,
+  region: process.env.AWS_LAMBDA_EDGE_REGION,
 };
-
+const ENVIRONMENT_BOTTLE_API = {
+  account: process.env.AWS_ACCOUNT,
+  region: process.env.AWS_BOTTLE_API_REGION,
+};
 const app = new cdk.App();
-new InfrastructureStack(app, 'InfrastructureStack', {
-  env: ENVIRONMENT,
+
+const bottleApi = new BottleApiInfrastructureStack(app, 'BottleApiInfrastructureStack', {
+  env: ENVIRONMENT_BOTTLE_API,
+  crossRegionReferences: true,
+});
+
+new LambdaEdgeInfrastructureStack(app, 'LambdaEdgeInfrastructureStack', {
+  env: ENVIRONMENT_LAMBDA_EDGE,
+  bottleApiUrl: bottleApi.lambdaUrl,
+  crossRegionReferences: true,
 });

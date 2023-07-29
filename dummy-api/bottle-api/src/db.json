@@ -1,0 +1,7 @@
+{
+  "bottles": [
+    { "id": 1, "name": "Feeding", "type": "infant" },
+    { "id": 2, "name": "Cola", "type": "adult" },
+    { "id": 3, "name": "Milk", "type": "adult" }
+  ]
+}

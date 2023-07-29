@@ -1,24 +1,18 @@
 import * as cdk from 'aws-cdk-lib';
 import { OriginProtocolPolicy } from 'aws-cdk-lib/aws-cloudfront';
-import { Code, Function, FunctionUrlAuthType, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Code, FunctionUrlAuthType, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import path = require('path');
 
-export class InfrastructureStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
+require('dotenv').config();
 
-    // normal Lambda declaration
-    // const lambdaHandler = new Function(this, 'LambdaHandler', {
-    //   code: Code.fromAsset(path.resolve(__dirname, '../../dist'), {
-    //     exclude: ['node_modules', '**/*.d.ts'],
-    //   }),
-    //   handler: 'main.handler',
-    //   runtime: Runtime.NODEJS_18_X,
-    //   memorySize: 512,
-    // });
-    // const lambdaUrlForOrigin = cdk.Fn.select(2, 
-    //   cdk.Fn.split('/', lambdaHandler.addFunctionUrl({ authType: FunctionUrlAuthType.NONE }).url));
+interface LambdaEdgeProps extends cdk.StackProps {
+  bottleApiUrl: string;
+}
+
+export class LambdaEdgeInfrastructureStack extends cdk.Stack {
+  constructor(scope: Construct, id: string, props: LambdaEdgeProps) {
+    super(scope, id, props);
 
     // Lambda@Edge declaration
     const myFunc = new cdk.aws_cloudfront.experimental.EdgeFunction(this, 'EdgeLambdaHandler', {
@@ -27,7 +21,7 @@ export class InfrastructureStack extends cdk.Stack {
       code: Code.fromAsset(path.resolve(__dirname, '../../dist'), {
         exclude: ['node_modules', '**/*.d.ts'],
       }),
-      memorySize: 512,
+      memorySize: 1024,
     });
     const lambdaEdgeUrlForOrigin = cdk.Fn.select(2, 
       cdk.Fn.split('/', myFunc.addFunctionUrl({ authType: FunctionUrlAuthType.NONE }).url));
@@ -66,6 +60,15 @@ export class InfrastructureStack extends cdk.Stack {
           }
         ],
       },
+    });
+
+    // SSM declaration
+    const bottleApiParam = new cdk.aws_ssm.StringParameter(this, 'SsmBottleApi', {
+      parameterName: process.env.AWS_SSM_NAME_BOTTLE_API_LAMBDA_EDGE,
+      stringValue: props?.bottleApiUrl,
+      description: 'endpoint for Bottle API',
+      tier: cdk.aws_ssm.ParameterTier.STANDARD,
+      allowedPattern: '.*',
     });
   }
 }

@@ -33,3 +33,9 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+/dummy-api/bottle-api/node_modules/
+/package-lock.json
+/yarn.lock
+/test/mock-api-copy.json
+/dummy-api/bottle-api/package-lock.json
+/dummy-api/bottle-api/build/

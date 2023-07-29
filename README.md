@@ -110,7 +110,8 @@ Adding the minify configuration has a significant decrease of `main.js` file siz
     - when the query does not yet exist, client sends the full query using POST
     - succeeding queries will retrieve it from the cache
   - By default, the persisted query are saved on in-memory cache
-    - TODO: better to save queries in a database as lambda function does not last longer and tend to have concurrent instances 
+    - TODO: better to save queries in a database as lambda function does not last longer and tend to have concurrent instances
+      - `yarn add keyv @apollo/utils.keyvadapter`
 - Lambda@Edge (at Regional Edge Location)
   - use for origin request and response event
 - Cloudfront Function (at Edge Location)
