@@ -14,9 +14,9 @@ export class BottleApiInfrastructureStack extends cdk.Stack {
     // normal Lambda declaration
     const lambdaHandler = new Function(this, 'BottleApiHandler', {
       code: Code.fromAsset(path.resolve(__dirname, '../../dummy-api/bottle-api/build'), {
-        exclude: ['node_modules', '**/*.d.ts'],
+        exclude: ['node_modules'],
       }),
-      handler: 'main.handler',
+      handler: 'index.handler',
       runtime: Runtime.NODEJS_18_X,
       memorySize: 512,
     });

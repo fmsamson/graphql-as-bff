@@ -19,7 +19,7 @@ const bootstrap = () => {
     return serverlessExpress({ app: server });
 }
 
-export const handler: Handler = async (
+export const handler: Handler = (
     event: any, 
     context: Context, 
     callback: Callback) => {
