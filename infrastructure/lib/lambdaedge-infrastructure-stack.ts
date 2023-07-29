@@ -8,6 +8,8 @@ require('dotenv').config();
 
 interface LambdaEdgeProps extends cdk.StackProps {
   bottleApiUrl: string;
+  householdApiUrl: string;
+  milkApiApiUrl: string;
 }
 
 export class LambdaEdgeInfrastructureStack extends cdk.Stack {
@@ -67,6 +69,20 @@ export class LambdaEdgeInfrastructureStack extends cdk.Stack {
       parameterName: process.env.AWS_SSM_NAME_BOTTLE_API_LAMBDA_EDGE,
       stringValue: props?.bottleApiUrl,
       description: 'endpoint for Bottle API',
+      tier: cdk.aws_ssm.ParameterTier.STANDARD,
+      allowedPattern: '.*',
+    });
+    const householdApiParam = new cdk.aws_ssm.StringParameter(this, 'SsmHouseholdApi', {
+      parameterName: process.env.AWS_SSM_NAME_HOUSEHOLD_API_LAMBDA_EDGE,
+      stringValue: props?.householdApiUrl,
+      description: 'endpoint for Household API',
+      tier: cdk.aws_ssm.ParameterTier.STANDARD,
+      allowedPattern: '.*',
+    });
+    const milkApiParam = new cdk.aws_ssm.StringParameter(this, 'SsmMilkApi', {
+      parameterName: process.env.AWS_SSM_NAME_MILK_API_LAMBDA_EDGE,
+      stringValue: props?.milkApiApiUrl,
+      description: 'endpoint for Milk API',
       tier: cdk.aws_ssm.ParameterTier.STANDARD,
       allowedPattern: '.*',
     });
