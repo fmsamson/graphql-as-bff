@@ -6,6 +6,7 @@ import serverlessExpress from '@vendia/serverless-express';
 import { SSM } from 'aws-sdk';
 
 let server: Handler;
+let SKIP_SSM = process.env.SKIP_SSM;
 
 export let bottleApiBaseEndpoint = 'http://localhost:4000/';
 export let householdApiBaseEndpoint = 'http://localhost:4000/';
@@ -23,7 +24,7 @@ async function lambdaBootstrap(): Promise<Handler> {
 }
 
 const configureEndpoint = async () => {
-    if (!(process.env.SKIP_SSM || process.env.NODE_ENV === 'development')) {
+    if (!(SKIP_SSM || process.env.NODE_ENV === 'development')) {
         const getParameter = async (paramName: string) => {
             const result = await ssm.getParameter({ Name: paramName, WithDecryption: false }).promise();
             return result.Parameter.Value;
@@ -32,6 +33,8 @@ const configureEndpoint = async () => {
         bottleApiBaseEndpoint = await getParameter('/bottle-api/base-url');
         householdApiBaseEndpoint = await getParameter('/household-api/base-url');
         milkApiBaseEndpoint = await getParameter('/milk-api/base-url');
+
+        SKIP_SSM = '1';
     }
 }
 
@@ -41,6 +44,6 @@ export const handler: Handler = async (
     callback: Callback) => {
         context.callbackWaitsForEmptyEventLoop = false;
         server = server ?? await lambdaBootstrap();
-        configureEndpoint();
+        await configureEndpoint();
         return server(event, context, callback);
 };

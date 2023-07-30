@@ -110,14 +110,19 @@ Adding the minify configuration has a significant decrease of `main.js` file siz
     - when the query does not yet exist, client sends the full query using POST
     - succeeding queries will retrieve it from the cache
   - By default, the persisted query are saved on in-memory cache
-    - TODO: better to save queries in a database as lambda function does not last longer and tend to have concurrent instances
-      - `yarn add keyv @apollo/utils.keyvadapter`
-      - `yarn add serverless-offline-ssm -D`
+    - NOTE: better to save queries in a database as lambda function does not last longer and tend to have concurrent instances
 - Lambda@Edge (at Regional Edge Location)
   - use for origin request and response event
+  - SSM access to specific region to be able to locate the API to call
+    - `yarn add serverless-offline-ssm -D`
+    - optimize ssm parameter retrieval by only doing it once per lambda instance
+    - batch retrieval will improve the response of the lambda function especially with cold start
+  - for GraphQL APQ with persistence layer, this is not possible as it requires VPC connection like Redis which is one of the limitation of Lambda@Edge
+    - the only way is to call the persistence layer publicly to get the stored queries, so it can be available in its own memory in lambda replicas 
+    - `yarn add keyv @apollo/utils.keyvadapter` to make use of customizable cache
 - Cloudfront Function (at Edge Location)
   - origin is the Function url of Lambda@Edge
-  - only use origin request and response and Lambda@Edge function will handle
+  - can only use origin request and response and Lambda@Edge function
 
 
 ## Installation
@@ -130,7 +135,7 @@ $ yarn install
 ## Running the app
 
 ```bash
-# development watch mode with mock API
+# development mode with mock API
 $ yarn run start:dev-with-mockApi
 
 # production mode
