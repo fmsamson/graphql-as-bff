@@ -12,7 +12,7 @@ export class MilkApiInfrastructureStack extends cdk.Stack {
     super(scope, id, props);
 
     // normal Lambda declaration
-    const lambdaHandler = new Function(this, 'MilkApiHandler', {
+    const lambdaHandler = new Function(this, 'MockMilkApiHandler', {
       code: Code.fromAsset(path.resolve(__dirname, '../../dummy-api/milk-api/build'), {
         exclude: ['node_modules'],
       }),

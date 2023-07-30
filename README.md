@@ -116,10 +116,13 @@ Adding the minify configuration has a significant decrease of `main.js` file siz
   - SSM access to specific region to be able to locate the API to call
     - `yarn add serverless-offline-ssm -D`
     - optimize ssm parameter retrieval by only doing it once per lambda instance
-    - batch retrieval will improve the response of the lambda function especially with cold start
+    - batch retrieval helps improve the response of the lambda function especially with cold start
+      - `yarn add @aws-sdk/client-ssm`
+      - cold start ~500ms, ssm retrieval ~1.5s
   - for GraphQL APQ with persistence layer, this is not possible as it requires VPC connection like Redis which is one of the limitation of Lambda@Edge
     - the only way is to call the persistence layer publicly to get the stored queries, so it can be available in its own memory in lambda replicas 
     - `yarn add keyv @apollo/utils.keyvadapter` to make use of customizable cache
+      - TODO: retrieve queries from S3
 - Cloudfront Function (at Edge Location)
   - origin is the Function url of Lambda@Edge
   - can only use origin request and response and Lambda@Edge function

@@ -12,7 +12,7 @@ export class BottleApiInfrastructureStack extends cdk.Stack {
     super(scope, id, props);
 
     // normal Lambda declaration
-    const lambdaHandler = new Function(this, 'BottleApiHandler', {
+    const lambdaHandler = new Function(this, 'MockBottleApiHandler', {
       code: Code.fromAsset(path.resolve(__dirname, '../../dummy-api/bottle-api/build'), {
         exclude: ['node_modules'],
       }),

@@ -12,7 +12,7 @@ export class HouseholdApiInfrastructureStack extends cdk.Stack {
     super(scope, id, props);
 
     // normal Lambda declaration
-    const lambdaHandler = new Function(this, 'HouseholdApiHandler', {
+    const lambdaHandler = new Function(this, 'MockHouseholdApiHandler', {
       code: Code.fromAsset(path.resolve(__dirname, '../../dummy-api/household-api/build'), {
         exclude: ['node_modules'],
       }),

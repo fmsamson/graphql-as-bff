@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { Callback, Context, Handler } from 'aws-lambda';
 import serverlessExpress from '@vendia/serverless-express';
 import { SSM } from 'aws-sdk';
+import { SSMClient, GetParametersCommand } from '@aws-sdk/client-ssm';
 
 let server: Handler;
 let SKIP_SSM = process.env.SKIP_SSM;
@@ -13,6 +14,7 @@ export let householdApiBaseEndpoint = 'http://localhost:4000/';
 export let milkApiBaseEndpoint = 'http://localhost:4000/';
 
 const ssm = new SSM({ region: 'us-east-1' });
+const ssmClient = new SSMClient({ region: 'us-east-1' });
 
 async function lambdaBootstrap(): Promise<Handler> {
     const app = await NestFactory.create(AppModule);
@@ -25,14 +27,25 @@ async function lambdaBootstrap(): Promise<Handler> {
 
 const configureEndpoint = async () => {
     if (!(SKIP_SSM || process.env.NODE_ENV === 'development')) {
-        const getParameter = async (paramName: string) => {
-            const result = await ssm.getParameter({ Name: paramName, WithDecryption: false }).promise();
-            return result.Parameter.Value;
-        }
-
-        bottleApiBaseEndpoint = await getParameter('/bottle-api/base-url');
-        householdApiBaseEndpoint = await getParameter('/household-api/base-url');
-        milkApiBaseEndpoint = await getParameter('/milk-api/base-url');
+        const multiParams = {
+            Names: [ 
+                '/graphql-as-bff/bottle-api/base-url', 
+                '/graphql-as-bff/household-api/base-url', 
+                '/graphql-as-bff/milk-api/base-url' 
+            ],
+            WithDecryption: false,
+        };
+        const command = new GetParametersCommand(multiParams);
+        await ssmClient.send(command).then(({ Parameters }) => {
+                Parameters.forEach(element => {
+                    switch(element.Name) {
+                        case '/graphql-as-bff/bottle-api/base-url': bottleApiBaseEndpoint = element.Value; break;
+                        case '/graphql-as-bff/household-api/base-url': householdApiBaseEndpoint = element.Value; break;
+                        case '/graphql-as-bff/milk-api/base-url': milkApiBaseEndpoint = element.Value; break;
+                        default: break;
+                    }
+                });
+            });
 
         SKIP_SSM = '1';
     }
