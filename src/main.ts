@@ -7,9 +7,9 @@ import { SSM } from 'aws-sdk';
 
 let server: Handler;
 
-export let bottleApiBaseEndpoint = 'http://localhost:4000';
-export let householdApiBaseEndpoint = 'http://localhost:4000';
-export let milkApiBaseEndpoint = 'http://localhost:4000';
+export let bottleApiBaseEndpoint = 'http://localhost:4000/';
+export let householdApiBaseEndpoint = 'http://localhost:4000/';
+export let milkApiBaseEndpoint = 'http://localhost:4000/';
 
 const ssm = new SSM({ region: 'us-east-1' });
 
