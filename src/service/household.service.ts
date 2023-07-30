@@ -9,7 +9,7 @@ export class HouseholdService {
     constructor(private readonly httpService: HttpService) {}
 
     async getHouseholdByName(name: string): Promise<HouseholdApi[]> {
-        const url = `${householdApiBaseEndpoint}/households?name=${name}`;
+        const url = `${householdApiBaseEndpoint}households?name=${name}`;
         const response: AxiosResponse<HouseholdApi[]> = await this.httpService.axiosRef.get(url);
         return response.data;
     }
