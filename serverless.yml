@@ -2,10 +2,14 @@ service: serverless-example
 
 plugins: 
   - serverless-offline
+  - serverless-offline-ssm
 
 provider:
   name: aws
   runtime: nodejs14.x
+  stage: dev
+  environment:
+    SKIP_SSM: 1
 
 functions:
   main:
@@ -17,3 +21,10 @@ functions:
       - http:
           method: ANY
           path: '{proxy+}'
+
+custom:
+  serverless-offline-ssm:
+    stages:
+      - dev
+    ssm:
+      'sample.key': 'test'

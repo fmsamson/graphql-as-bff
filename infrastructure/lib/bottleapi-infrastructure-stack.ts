@@ -21,7 +21,6 @@ export class BottleApiInfrastructureStack extends cdk.Stack {
       memorySize: 512,
     });
 
-    this.lambdaUrl = cdk.Fn.select(2, 
-      cdk.Fn.split('/', lambdaHandler.addFunctionUrl({ authType: FunctionUrlAuthType.NONE }).url));    
+    this.lambdaUrl = lambdaHandler.addFunctionUrl({ authType: FunctionUrlAuthType.NONE }).url;
   }
 }

@@ -86,5 +86,8 @@ export class LambdaEdgeInfrastructureStack extends cdk.Stack {
       tier: cdk.aws_ssm.ParameterTier.STANDARD,
       allowedPattern: '.*',
     });
+    bottleApiParam.grantRead(myFunc);
+    householdApiParam.grantRead(myFunc);
+    milkApiParam.grantRead(myFunc);
   }
 }
