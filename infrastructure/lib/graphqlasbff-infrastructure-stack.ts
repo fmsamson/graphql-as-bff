@@ -55,10 +55,6 @@ export class GraphqlAsBffInfrastructureStack extends cdk.Stack {
           {
             functionVersion: graphqlAsBff.currentVersion,
             eventType: cdk.aws_cloudfront.LambdaEdgeEventType.ORIGIN_REQUEST,
-          },
-          {
-            functionVersion: graphqlAsBff.currentVersion,
-            eventType: cdk.aws_cloudfront.LambdaEdgeEventType.ORIGIN_RESPONSE,
           }
         ],
       },
