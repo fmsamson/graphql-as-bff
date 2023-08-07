@@ -22,8 +22,12 @@ const multiParams = {
 
 export const configureEndpoint = async () => {
     if (!(SKIP_SSM || process.env.NODE_ENV === 'development')) {
-        await getParameters(ssmWithinClient, (parameters) => { 
-            if (parameters.length > 0) PATH_EXIST = true; 
+        await getParameters(ssmWithinClient, (parameters) => {
+            const result = parameters.filter(entry => {
+                const value = paramNames.find((name) => { return name === entry.Name });
+                return value !== undefined && value !== null;
+            });
+            if (result.length === paramNames.length) PATH_EXIST = true;
         });
 
         if (!PATH_EXIST) {
@@ -58,7 +62,7 @@ function assignParameter(parameter) {
 
 async function createParameters(parameters) {
     parameters.forEach(async parameter => {
-        const input = { // TODO: expiration
+        const input = { // TODO: send to queue the parameters created
             Name: parameter.Name,
             Value: parameter.Value,
             Type: 'String',
