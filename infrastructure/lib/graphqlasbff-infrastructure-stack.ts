@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { OriginProtocolPolicy } from 'aws-cdk-lib/aws-cloudfront';
+import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Code, FunctionUrlAuthType, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import path = require('path');
@@ -16,6 +17,15 @@ export class GraphqlAsBffInfrastructureStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: GraphqlAsBffProps) {
     super(scope, id, props);
 
+    // SSM Policy declaration
+    const ssmPolicy = new PolicyStatement({
+      actions: [
+        'ssm:PutParameter',
+        'ssm:GetParameters',
+      ],
+      resources: [ `arn:aws:ssm:*:${props.env?.account}:parameter/graphql-as-bff/*` ],
+    });
+
     // Lambda@Edge declaration
     const graphqlAsBff = new cdk.aws_cloudfront.experimental.EdgeFunction(this, 'GraphqlAsBffHandler', {
       runtime: Runtime.NODEJS_18_X,
@@ -27,6 +37,7 @@ export class GraphqlAsBffInfrastructureStack extends cdk.Stack {
     });
     const graphqlAsBffUrlForOrigin = cdk.Fn.select(2, 
       cdk.Fn.split('/', graphqlAsBff.addFunctionUrl({ authType: FunctionUrlAuthType.NONE }).url));
+    graphqlAsBff.addToRolePolicy(ssmPolicy);
 
     // Cloudfront cache policy declaration
     const cachePolicy = new cdk.aws_cloudfront.CachePolicy(this, 'GraphqlAsBffCloudfrontCachPolicy', {
@@ -82,8 +93,5 @@ export class GraphqlAsBffInfrastructureStack extends cdk.Stack {
       tier: cdk.aws_ssm.ParameterTier.STANDARD,
       allowedPattern: '.*',
     });
-    bottleApiParam.grantRead(graphqlAsBff);
-    householdApiParam.grantRead(graphqlAsBff);
-    milkApiParam.grantRead(graphqlAsBff);
   }
 }

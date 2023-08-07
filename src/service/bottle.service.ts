@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
 import { HttpService } from '@nestjs/axios';
 import { BottleApi } from '../model/api/bottle-api.model';
-import { bottleApiBaseEndpoint } from '../main';
+import { bottleApiBaseEndpoint } from '../configure.ssm';
 
 @Injectable()
 export class BottleService {

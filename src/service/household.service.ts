@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
 import { HttpService } from '@nestjs/axios';
 import { HouseholdApi } from '../model/api/household-api.model';
-import { householdApiBaseEndpoint } from '../main';
+import { householdApiBaseEndpoint } from '../configure.ssm';
 
 @Injectable()
 export class HouseholdService {

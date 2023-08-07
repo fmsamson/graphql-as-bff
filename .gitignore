@@ -47,3 +47,4 @@ lerna-debug.log*
 /dummy-api/package-lock.json
 /dummy-api/milk-api/package-lock.json
 /dummy-api/household-api/package-lock.json
+.env

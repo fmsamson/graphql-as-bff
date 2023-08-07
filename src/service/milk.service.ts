@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
 import { HttpService } from '@nestjs/axios';
 import { MilkApi } from '../model/api/milk-api.model';
-import { milkApiBaseEndpoint } from '../main';
+import { milkApiBaseEndpoint } from '../configure.ssm';
 
 @Injectable()
 export class MilkService {
