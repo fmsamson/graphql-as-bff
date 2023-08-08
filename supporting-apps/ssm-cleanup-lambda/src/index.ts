@@ -13,13 +13,20 @@ export const handler: Handler = async (
             Name: '/graphql-as-bff/ssm-cleanup-queue/url',
             WithDecryption: false,
         }).then(async ({ Parameter }) => {
-            await sqsClient.receiveMessage({
-                MaxNumberOfMessages: 10,
-                QueueUrl: Parameter.Value,
-                VisibilityTimeout: 1,
-                WaitTimeSeconds: 0
-            }, (error, data) => {
-                data.Messages.forEach( async message => {
+            let keepRetrieving = true;
+            while (keepRetrieving) {
+                let messages = undefined;
+                await sqsClient.receiveMessage({
+                    MaxNumberOfMessages: 10,
+                    QueueUrl: Parameter.Value,
+                    VisibilityTimeout: 5,
+                }).then((value) => {
+                    messages = value.Messages;
+                });
+                keepRetrieving = messages !== undefined && messages.length > 0;
+                if (!keepRetrieving) break;
+                
+                messages.forEach( async message => {
                     const msgBody = JSON.parse(message.Body);
                     
                     const ssmDeleteClient = new SSM({ region: msgBody.region });
@@ -40,7 +47,7 @@ export const handler: Handler = async (
                         console.error(err);
                     }
                 });
-            }); 
+            }
         });
         callback(null, event);
 };

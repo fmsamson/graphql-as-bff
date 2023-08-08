@@ -25,6 +25,7 @@ export class GraphqlAsBffInfrastructureStack extends cdk.Stack {
       actions: [
         'ssm:PutParameter',
         'ssm:GetParameters',
+        'ssm:GetParameter',
         'ssm:DeleteParameter',
       ],
       resources: [ 
@@ -131,6 +132,7 @@ export class GraphqlAsBffInfrastructureStack extends cdk.Stack {
       handler: 'index.handler',
       runtime: Runtime.NODEJS_18_X,
       memorySize: 512,
+      timeout: cdk.Duration.seconds(30),
     });
     ssmCleanupQueue.grantConsumeMessages(ssmCleanupHandler);
     ssmCleanupHandler.addToRolePolicy(ssmPolicy);
@@ -138,7 +140,8 @@ export class GraphqlAsBffInfrastructureStack extends cdk.Stack {
     // EventBridge Scheduler declaration
     new Rule(this, 'SsmCleanupRule', {
       schedule: Schedule.cron({
-          minute: '0',
+        minute: '0',
+        hour: '*/12',
       }),
       enabled: true,
       targets: [
