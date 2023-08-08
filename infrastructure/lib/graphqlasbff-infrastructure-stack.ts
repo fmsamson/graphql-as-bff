@@ -1,5 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { OriginProtocolPolicy } from 'aws-cdk-lib/aws-cloudfront';
+import { Rule, Schedule } from 'aws-cdk-lib/aws-events';
+import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Code, FunctionUrlAuthType, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
@@ -23,6 +25,7 @@ export class GraphqlAsBffInfrastructureStack extends cdk.Stack {
       actions: [
         'ssm:PutParameter',
         'ssm:GetParameters',
+        'ssm:DeleteParameter',
       ],
       resources: [ 
         `arn:aws:ssm:*:${props.env?.account}:parameter${process.env.AWS_SSM_NAME_BOTTLE_API_LAMBDA_EDGE}`, 
@@ -118,6 +121,29 @@ export class GraphqlAsBffInfrastructureStack extends cdk.Stack {
       description: 'endpoint for SSM Cleanup Queue',
       tier: cdk.aws_ssm.ParameterTier.STANDARD,
       allowedPattern: '.*',
+    });
+
+    // Lambda for SSM Cleanup declaration
+    const ssmCleanupHandler = new cdk.aws_lambda.Function(this, 'SsmCleanupHandler', {
+      code: Code.fromAsset(path.resolve(__dirname, '../../supporting-apps/ssm-cleanup-lambda/build'), {
+        exclude: ['node_modules'],
+      }),
+      handler: 'index.handler',
+      runtime: Runtime.NODEJS_18_X,
+      memorySize: 512,
+    });
+    ssmCleanupQueue.grantConsumeMessages(ssmCleanupHandler);
+    ssmCleanupHandler.addToRolePolicy(ssmPolicy);
+
+    // EventBridge Scheduler declaration
+    new Rule(this, 'SsmCleanupRule', {
+      schedule: Schedule.cron({
+          minute: '0',
+      }),
+      enabled: true,
+      targets: [
+        new LambdaFunction(ssmCleanupHandler),
+      ],
     });
   }
 }

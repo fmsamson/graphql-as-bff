@@ -23,8 +23,8 @@
     "test:e2e-with-mockApi": "export NODE_ENV=development && npm-run-all copy:mock-api-json --parallel mockApi:start test:e2e --race",
     "start:serverless-offline": "nest build --webpack && npx serverless offline",
     "start:dev-with-mockApi": "npm-run-all copy:mock-api-json --parallel mockApi:start start:serverless-offline",
-    "dummy:build": "cd dummy-api && npm run build",
-    "infra:deploy": "npm run dummy:build && rm -frv node_modules dist && npm prune && nest build --webpack && cd infrastructure && rm -frv cdk.out node_modules && npm install && cdk synth && cdk deploy --all"
+    "other-apps:build": "cd supporting-apps && npm run build && cd ../dummy-api && npm run build",
+    "infra:deploy": "npm run other-apps:build && rm -frv node_modules dist && npm prune && nest build --webpack && cd infrastructure && rm -frv cdk.out node_modules && npm install && cdk synth && cdk deploy --all"
   },
   "dependencies": {
     "@apollo/server": "^4.7.5",
@@ -75,7 +75,7 @@
     "ts-loader": "^9.4.3",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.1.3"
+    "typescript": "^5.1.6"
   },
   "jest": {
     "moduleFileExtensions": [

@@ -1,0 +1,17 @@
+{
+  "name": "dummy-api",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "build:ssm-cleanup-lambda": "cd ssm-cleanup-lambda && rimraf ./build && webpack",
+    "build": "npm run build:ssm-cleanup-lambda"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "rimraf": "^5.0.1",
+    "webpack-cli": "^5.1.4"
+  }
+}

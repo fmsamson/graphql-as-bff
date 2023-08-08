@@ -119,13 +119,19 @@ Adding the minify configuration has a significant decrease of `main.js` file siz
     - batch retrieval helps improve the response of the lambda function especially with cold start
       - `yarn add @aws-sdk/client-ssm`
       - cold start ~500ms, ssm retrieval ~1.5s
+    - SSM Cleanup
+      - cannot use expiration option for SSM param as this is under "Advanced" tier which is not free
+      - instead have a queue to every SSM Parameter created in edge location
+        - `yarn add @aws-sdk/client-sqs`
+      - there will be a scheduled lambda function running at the main region to read the queue and do the deletion
+        - this is to make sure that there will be no unnecessary SSM Param left behind in edge location
+        - also when an update is made on the SSM Param from main region, there will be a chance to update the existing SSM 
+        - less manual management to these SSM params created in the edge regions
+      - the schedule will be triggered by EventBridge
   - for GraphQL APQ with persistence layer, this is not possible as it requires VPC connection like Redis which is one of the limitation of Lambda@Edge
     - the only way is to call the persistence layer publicly to get the stored queries, so it can be available in its own memory in lambda replicas 
     - `yarn add keyv @apollo/utils.keyvadapter` to make use of customizable cache
       - TODO: retrieve queries from S3
-- Cloudfront Function (at Edge Location)
-  - origin is the Function url of Lambda@Edge
-  - can only use origin request and response and Lambda@Edge function
 
 
 ## Installation

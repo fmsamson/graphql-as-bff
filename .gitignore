@@ -48,3 +48,8 @@ lerna-debug.log*
 /dummy-api/milk-api/package-lock.json
 /dummy-api/household-api/package-lock.json
 .env
+/supporting-apps/ssm-cleanup-lambda/build/
+/supporting-apps/ssm-cleanup-lambda/node_modules/
+/supporting-apps/ssm-cleanup-lambda/package-lock.json
+/supporting-apps/node_modules/
+/supporting-apps/package-lock.json

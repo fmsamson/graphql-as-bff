@@ -7,6 +7,6 @@
     "**/*spec.ts", 
     "infrastructure", 
     "dummy-api",
-    "viewer"
+    "supporting-apps"
   ]
 }
