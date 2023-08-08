@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { OriginProtocolPolicy } from 'aws-cdk-lib/aws-cloudfront';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Code, FunctionUrlAuthType, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 import path = require('path');
 
@@ -23,7 +24,12 @@ export class GraphqlAsBffInfrastructureStack extends cdk.Stack {
         'ssm:PutParameter',
         'ssm:GetParameters',
       ],
-      resources: [ `arn:aws:ssm:*:${props.env?.account}:parameter/graphql-as-bff/*` ],
+      resources: [ 
+        `arn:aws:ssm:*:${props.env?.account}:parameter${process.env.AWS_SSM_NAME_BOTTLE_API_LAMBDA_EDGE}`, 
+        `arn:aws:ssm:*:${props.env?.account}:parameter${process.env.AWS_SSM_NAME_HOUSEHOLD_API_LAMBDA_EDGE}`,
+        `arn:aws:ssm:*:${props.env?.account}:parameter${process.env.AWS_SSM_NAME_MILK_API_LAMBDA_EDGE}`,
+        `arn:aws:ssm:*:${props.env?.account}:parameter${process.env.AWS_SSM_NAME_SSM_CLEANUP_QUEUE_LAMBDA_EDGE}`,
+      ],
     });
 
     // Lambda@Edge declaration
@@ -71,25 +77,45 @@ export class GraphqlAsBffInfrastructureStack extends cdk.Stack {
       },
     });
 
+    // SQS declaration
+    const ssmCleanupDlq = new Queue(this, 'SsmCleanupDlq', {
+      queueName: 'ssm-cleanup-dlq',
+    });
+    const ssmCleanupQueue = new Queue(this, 'SsmCleanupQueue', {
+      queueName: 'ssm-cleanup',
+      deadLetterQueue: {
+        queue: ssmCleanupDlq,
+        maxReceiveCount: 3,
+      },
+    });
+    ssmCleanupQueue.grantSendMessages(graphqlAsBff);
+
     // SSM declaration
-    const bottleApiParam = new cdk.aws_ssm.StringParameter(this, 'SsmGraphqlAsBffBottleApi', {
+    new cdk.aws_ssm.StringParameter(this, 'SsmGraphqlAsBffBottleApi', {
       parameterName: process.env.AWS_SSM_NAME_BOTTLE_API_LAMBDA_EDGE,
       stringValue: props?.bottleApiUrl,
       description: 'endpoint for Bottle API',
       tier: cdk.aws_ssm.ParameterTier.STANDARD,
       allowedPattern: '.*',
     });
-    const householdApiParam = new cdk.aws_ssm.StringParameter(this, 'SsmGraphqlAsBffHouseholdApi', {
+    new cdk.aws_ssm.StringParameter(this, 'SsmGraphqlAsBffHouseholdApi', {
       parameterName: process.env.AWS_SSM_NAME_HOUSEHOLD_API_LAMBDA_EDGE,
       stringValue: props?.householdApiUrl,
       description: 'endpoint for Household API',
       tier: cdk.aws_ssm.ParameterTier.STANDARD,
       allowedPattern: '.*',
     });
-    const milkApiParam = new cdk.aws_ssm.StringParameter(this, 'SsmGraphqlAsBffMilkApi', {
+    new cdk.aws_ssm.StringParameter(this, 'SsmGraphqlAsBffMilkApi', {
       parameterName: process.env.AWS_SSM_NAME_MILK_API_LAMBDA_EDGE,
       stringValue: props?.milkApiApiUrl,
       description: 'endpoint for Milk API',
+      tier: cdk.aws_ssm.ParameterTier.STANDARD,
+      allowedPattern: '.*',
+    });
+    new cdk.aws_ssm.StringParameter(this, 'SsmGraphqlAsBffSsmCleanupQueue', {
+      parameterName: process.env.AWS_SSM_NAME_SSM_CLEANUP_QUEUE_LAMBDA_EDGE,
+      stringValue: ssmCleanupQueue.queueUrl,
+      description: 'endpoint for SSM Cleanup Queue',
       tier: cdk.aws_ssm.ParameterTier.STANDARD,
       allowedPattern: '.*',
     });
