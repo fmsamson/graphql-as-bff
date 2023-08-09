@@ -53,3 +53,6 @@ lerna-debug.log*
 /supporting-apps/ssm-cleanup-lambda/package-lock.json
 /supporting-apps/node_modules/
 /supporting-apps/package-lock.json
+/supporting-apps/ssm-creation-edge-viewer/build/
+/supporting-apps/ssm-creation-edge-viewer/node_modules/
+/supporting-apps/ssm-creation-edge-viewer/package-lock.json

@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "build:ssm-cleanup-lambda": "cd ssm-cleanup-lambda && rimraf ./build && webpack",
-    "build": "npm run build:ssm-cleanup-lambda"
+    "build:ssm-creation-edge-viewer": "cd ssm-creation-edge-viewer && rimraf ./build && webpack",
+    "build": "npm run build:ssm-cleanup-lambda && npm run build:ssm-creation-edge-viewer"
   },
   "keywords": [],
   "author": "",

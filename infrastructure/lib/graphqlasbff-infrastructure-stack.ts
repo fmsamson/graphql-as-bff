@@ -36,7 +36,20 @@ export class GraphqlAsBffInfrastructureStack extends cdk.Stack {
       ],
     });
 
-    // Lambda@Edge declaration
+    // Lambda@Edge VIEWER_REQUEST declaration
+    const ssmCreationHandler = new cdk.aws_cloudfront.experimental.EdgeFunction(this, 'SsmCreationHandler', {
+      runtime: Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: Code.fromAsset(path.resolve(__dirname, '../../supporting-apps/ssm-creation-edge-viewer/build'), {
+        exclude: ['node_modules', '**/*.d.ts'],
+      }),
+      memorySize: 128,
+    });
+    const ssmCreationUrlForOrigin = cdk.Fn.select(2, 
+      cdk.Fn.split('/', ssmCreationHandler.addFunctionUrl({ authType: FunctionUrlAuthType.NONE }).url));
+    ssmCreationHandler.addToRolePolicy(ssmPolicy);
+
+    // Lambda@Edge ORIGIN_REQUEST declaration
     const graphqlAsBff = new cdk.aws_cloudfront.experimental.EdgeFunction(this, 'GraphqlAsBffHandler', {
       runtime: Runtime.NODEJS_18_X,
       handler: 'main.handler',
@@ -62,13 +75,14 @@ export class GraphqlAsBffInfrastructureStack extends cdk.Stack {
     });
     
     // Cloudfront declaration
-    new cdk.aws_cloudfront.Distribution(this, 'GraphqlAsBffCloudfrontDistribution', {
+    const httpOrigin = new cdk.aws_cloudfront_origins.HttpOrigin(graphqlAsBffUrlForOrigin, {
+      protocolPolicy: OriginProtocolPolicy.HTTPS_ONLY,
+      httpsPort: 443,
+      readTimeout: cdk.Duration.seconds(30),
+    });
+    const graphqlAsBffDist = new cdk.aws_cloudfront.Distribution(this, 'GraphqlAsBffCloudfrontDistribution', {
       defaultBehavior: {
-        origin: new cdk.aws_cloudfront_origins.HttpOrigin(graphqlAsBffUrlForOrigin, {
-          protocolPolicy: OriginProtocolPolicy.HTTPS_ONLY,
-          httpsPort: 443,
-          readTimeout: cdk.Duration.seconds(30),
-        }),
+        origin: httpOrigin,
         viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         allowedMethods: cdk.aws_cloudfront.AllowedMethods.ALLOW_ALL,
         cachePolicy: cachePolicy,
@@ -76,7 +90,11 @@ export class GraphqlAsBffInfrastructureStack extends cdk.Stack {
           {
             functionVersion: graphqlAsBff.currentVersion,
             eventType: cdk.aws_cloudfront.LambdaEdgeEventType.ORIGIN_REQUEST,
-          }
+          },
+          {
+            functionVersion: ssmCreationHandler.currentVersion,
+            eventType: cdk.aws_cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
+          },
         ],
       },
     });
@@ -92,7 +110,7 @@ export class GraphqlAsBffInfrastructureStack extends cdk.Stack {
         maxReceiveCount: 3,
       },
     });
-    ssmCleanupQueue.grantSendMessages(graphqlAsBff);
+    ssmCleanupQueue.grantSendMessages(ssmCreationHandler);
 
     // SSM declaration
     new cdk.aws_ssm.StringParameter(this, 'SsmGraphqlAsBffBottleApi', {

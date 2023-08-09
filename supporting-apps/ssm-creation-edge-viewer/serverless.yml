@@ -1,0 +1,27 @@
+service: serverless-lambda-edge-example
+
+plugins: 
+  - serverless-offline-edge-lambda
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: eu-central-1
+  environment:
+    AWS_REGION: eu-central-1
+
+functions:
+  lambda:
+    handler: build/index.handler
+    lambdaAtEdge:
+      distribution: 'WebsiteDistribution'
+      eventType: 'viewer-request'
+      pathPattern: '/graphql'
+
+resources:
+  Resources:
+    WebsiteDistribution:
+      Type: 'AWS::CloudFront::Distribution'
+      Properties:
+        DistributionConfig:
+          DefaultCacheBehavior:

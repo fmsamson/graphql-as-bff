@@ -30,14 +30,15 @@ export const handler: Handler = async (
                     const msgBody = JSON.parse(message.Body);
                     
                     const ssmDeleteClient = new SSM({ region: msgBody.region });
-                    try {
-                        await ssmDeleteClient.deleteParameter({
-                            Name: msgBody.name,
-                        });
-                    } catch(err) {
-                        console.error(err);
-                    }
-
+                    msgBody.names.forEach(async name => {
+                        try {
+                            await ssmDeleteClient.deleteParameter({
+                                Name: name,
+                            });
+                        } catch(err) {
+                            console.error(err);
+                        }
+                    });
                     try {
                         await sqsClient.deleteMessage({
                             QueueUrl: Parameter.Value,
