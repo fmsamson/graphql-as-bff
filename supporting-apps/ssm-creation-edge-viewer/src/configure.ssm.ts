@@ -19,25 +19,29 @@ const multiParams = {
 };
 
 export const configureEndpoint = async () => {
-    await getParameters(ssmWithinClient, async (parameters) => {
-        const result = parameters.filter(entry => {
-            const value = paramNames.find((name) => { return name === entry.Name });
-            return value !== undefined && value !== null;
-        });
-        if (result.length !== paramNames.length) {
-            await getParameters(ssmMainClient, createParameters);
-        }
+    let paramsExist = false;
+    let paramsToCreate = undefined;
+    Promise.all([
+        getParameters(ssmWithinClient, (parameters) => {
+            const result = parameters.filter(entry => {
+                const value = paramNames.find((name) => { return name === entry.Name; });
+                return value !== undefined && value !== null;
+            });
+            paramsExist = result.length === paramNames.length;
+        }),
+        getParameters(ssmMainClient, (parameters) => { paramsToCreate = parameters; })
+    ]).then(() => {
+        if (!paramsExist) createParameters(paramsToCreate);
     });
-    return null;
 }
 
 async function getParameters(ssmClient, additionalExecution) {
     const command = new GetParametersCommand(multiParams);
-    await ssmClient.send(command).then(async ({ Parameters }) => {
+    await ssmClient.send(command).then(({ Parameters }) => {
         console.log(`Parameters (${Parameters.length}): ${Parameters}`);
         const cleanupQueueParam = Parameters.find((parameter) => { return parameter.Name === paramNames[3] });
         if (cleanupQueueParam) ssmCleanupQueueUrl = cleanupQueueParam.Value;
-        await additionalExecution(Parameters);
+        additionalExecution(Parameters);
     });
 }
 

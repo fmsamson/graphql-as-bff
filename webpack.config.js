@@ -45,7 +45,7 @@ module.exports = (options, webpack) => {
                         keep_classnames: true,
                         keep_fnames: true,
                         compress: {
-                            drop_console: true,
+                            drop_console: false,
                         },
                         format: {
                             comments: false,

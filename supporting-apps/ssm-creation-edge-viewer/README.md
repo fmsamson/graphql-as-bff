@@ -1,0 +1,1 @@
+Make sure to set the region in your aws config `~/.aws/config`
