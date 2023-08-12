@@ -10,6 +10,7 @@
   - [Setting-up Mock API for development and testing](#setting-up-mock-api-for-development-and-testing)
 - [Serverless](#serverless)
 - [Minify](#minify)
+- [Improving performance of GraphQL Lambda function](#improving-performance-of-graphql-lambda-function)
 - [Installation](#installation)
 - [Running the app](#running-the-app)
 - [Test](#test)
